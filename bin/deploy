@@ -1,0 +1,11 @@
+#!/bin/bash
+
+set -o errexit -o xtrace
+
+bucket=ecs-refarch
+
+zip deploy/templates.zip ecs-refarch-continuous-deployment.yaml templates/*
+
+aws s3 cp deploy/templates.zip "s3://${bucket}" --acl public-read
+aws s3 cp ecs-refarch-continuous-deployment.yaml "s3://${bucket}" --acl public-read
+aws s3 cp --recursive templates/ "s3://${bucket}/templates" --acl public-read
