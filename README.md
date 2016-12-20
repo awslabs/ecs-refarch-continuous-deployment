@@ -1,10 +1,11 @@
-# Continuous Deployment to Amazon ECS using AWS CodePipeline, AWS CodeBuild, and AWS CloudFormation
+# ECS Reference Architecture: Continuous Deployment
 
-This reference architecture provides a set of AWS CloudFormation templates to demonstrate how to achieve continuous deployment of a Docker container to Amazon ECS. With continuous deployment, software revisions are deployed to a production environment automatically without explicit approval from a developer, making the entire software release process automated.
 
-Launching this stack provisions a continuous deployment process that uses AWS CodePipeline to monitor a GitHub repository for new commits, AWS CodeBuild to create a new Docker container image and to push it into Amazon ECR, and AWS CloudFormation to deploy the new container image to production on Amazon ECS.
+The ECS Continuous Deployment reference architecture demonstrates how to achieve [continuous deployment][continuous-deployment] of an application to Amazon ECS using AWS CodePipeline, AWS CodeBuild, and AWS CloudFormation. With continuous deployment, software revisions are deployed to a production environment automatically without explicit approval from a developer, making the entire software release process automated.
 
-![](images/architecture.png)
+Launching this AWS CloudFormation stack provisions a continuous deployment process that uses AWS CodePipeline to monitor a GitHub repository for new commits, AWS CodeBuild to create a new Docker container image and to push it into Amazon ECR, and AWS CloudFormation to deploy the new container image to production on Amazon ECS.
+
+[![](images/architecture.png)][architecture]
 
 ## Running the example
 
@@ -82,6 +83,9 @@ The following sections explains all of the resources created by the CloudFormati
 
 ## License
 
-Copyright 2011-2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+This reference architecture sample is [licensed][license] under Apache 2.0.
 
-Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with the License. A copy of the License is located at [http://aws.amazon.com/apache2.0/](http://aws.amazon.com/apache2.0/) or in the "license" file accompanying this file. This file is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
+
+[continuous-deployment]: https://aws.amazon.com/devops/continuous-delivery/
+[architecture]: images/architecture.pdf
+[license]: LICENSE
