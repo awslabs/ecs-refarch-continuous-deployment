@@ -23,13 +23,16 @@ Parameters:
   Cluster:
     Type: String
 
+  TemplateBucket:
+    Type: String
+
 
 Resources:
   CloudFormationExecutionRole:
     Type: AWS::IAM::Role
     DeletionPolicy: Retain
     Properties:
-      RoleName: !Sub ecs-cd-cfn
+      RoleName: !Sub cfn-${AWS::StackName}
       Path: /
       AssumeRolePolicyDocument: |
         {
@@ -54,7 +57,7 @@ Resources:
   CodeBuildServiceRole:
     Type: AWS::IAM::Role
     Properties:
-      RoleName: !Sub ecs-cd-codebuild
+      RoleName: !Sub cb-${AWS::StackName}
       Path: /
       AssumeRolePolicyDocument: |
         {
@@ -96,7 +99,7 @@ Resources:
   CodePipelineServiceRole:
     Type: AWS::IAM::Role
     Properties:
-      RoleName: !Sub ecs-cd-codepipeline
+      RoleName: !Sub cp-${AWS::StackName}
       Path: /
       AssumeRolePolicyDocument: |
         {
@@ -113,6 +116,8 @@ Resources:
             Statement:
               - Resource:
                   - !Sub arn:aws:s3:::${ArtifactBucket}/*
+                  - !Sub arn:aws:s3:::${TemplateBucket}
+                  - !Sub arn:aws:s3:::${TemplateBucket}/*
                 Effect: Allow
                 Action:
                   - s3:PutObject
@@ -204,7 +209,7 @@ Resources:
                 - Name: Template
               RunOrder: 1
               Configuration:
-                S3Bucket: ecs-refarch
+                S3Bucket: !Ref TemplateBucket
                 S3ObjectKey: templates.zip
         - Name: Build
           Actions:

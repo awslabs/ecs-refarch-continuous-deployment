@@ -25,7 +25,7 @@ This creates a directory named `ecs-demo-php-simple-app` in your current directo
 
 Choose **Launch Stack** to launch the template in the US East (N. Virginia) Region in your account:
 
-[![Launch ECS Continuous Deployment into North Virginia with CloudFormation](images/cloudformation-launch-stack.png)](https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/new?stackName=ecs-continuous-deployment&templateURL=https://s3.amazonaws.com/ecs-refarch-continuous-deployment/ecs-refarch-continuous-deployment.yaml)
+[![Launch ECS Continuous Deployment into North Virginia with CloudFormation](images/cloudformation-launch-stack.png)](https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/new?stackName=ecs-cd&templateURL=https://s3.amazonaws.com/ecs-refarch-continuous-deployment/ecs-refarch-continuous-deployment.yaml)
 
 The CloudFormation template requires the following parameters:
 
