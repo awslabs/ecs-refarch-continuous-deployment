@@ -13,6 +13,9 @@ Parameters:
   Cluster:
     Type: String
 
+  Repository:
+    Type: String
+
 
 Resources:
   ECSServiceRole:
@@ -30,10 +33,6 @@ Resources:
         }
       ManagedPolicyArns:
         - arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceRole
-
-  Repository:
-    Type: AWS::ECR::Repository
-    DeletionPolicy: Retain
 
   Service:
     Type: AWS::ECS::Service
@@ -81,11 +80,3 @@ Resources:
             - /bin/sh -c "while true; do /bin/date > /var/www/my-vol/date; sleep 1; done"
       Volumes:
         - Name: my-vol
-
-
-Outputs:
-  Repository:
-    Value: !Ref Repository
-
-  StackName:
-    Value: !Ref AWS::StackName
