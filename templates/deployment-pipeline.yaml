@@ -14,12 +14,6 @@ Parameters:
   TargetGroup:
     Type: String
 
-  StackName:
-    Type: String
-
-  Repository:
-    Type: String
-
   Cluster:
     Type: String
 
@@ -28,6 +22,10 @@ Parameters:
 
 
 Resources:
+  Repository:
+    Type: AWS::ECR::Repository
+    DeletionPolicy: Retain
+
   CloudFormationExecutionRole:
     Type: AWS::IAM::Role
     DeletionPolicy: Retain
@@ -237,7 +235,7 @@ Resources:
               Configuration:
                 ChangeSetName: Deploy
                 ActionMode: CREATE_UPDATE
-                StackName: !Ref StackName
+                StackName: !Sub "${AWS::StackName}-Service"
                 Capabilities: CAPABILITY_NAMED_IAM
                 TemplatePath: Template::templates/service.yaml
                 RoleArn: !GetAtt CloudFormationExecutionRole.Arn
@@ -246,7 +244,8 @@ Resources:
                     "Tag" : { "Fn::GetParam" : [ "BuildOutput", "build.json", "tag" ] },
                     "DesiredCount": "1",
                     "Cluster": "${Cluster}",
-                    "TargetGroup": "${TargetGroup}"
+                    "TargetGroup": "${TargetGroup}",
+                    "Repository": "${Repository}"
                   }
               InputArtifacts:
                 - Name: Template

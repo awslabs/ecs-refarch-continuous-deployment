@@ -67,8 +67,6 @@ Resources:
         GitHubRepo: !Ref GitHubRepo
         GitHubBranch: !Ref GitHubBranch
         TargetGroup: !GetAtt LoadBalancer.Outputs.TargetGroup
-        Repository: !GetAtt Service.Outputs.Repository
-        StackName: !GetAtt Service.Outputs.StackName
         TemplateBucket: ecs-refarch-continuous-deployment
 
   LoadBalancer:
@@ -78,14 +76,6 @@ Resources:
       Parameters:
         Subnets: !GetAtt VPC.Outputs.Subnets
         VpcId: !GetAtt VPC.Outputs.VpcId
-
-  Service:
-    Type: AWS::CloudFormation::Stack
-    Properties:
-      TemplateURL: https://s3.amazonaws.com/ecs-refarch-continuous-deployment/templates/service.yaml
-      Parameters:
-        Cluster: !GetAtt Cluster.Outputs.ClusterName
-        TargetGroup: !GetAtt LoadBalancer.Outputs.TargetGroup
 
   VPC:
     Type: AWS::CloudFormation::Stack
