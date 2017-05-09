@@ -146,21 +146,24 @@ Resources:
         BuildSpec: |
           version: 0.1
           phases:
+            install:
+              commands:
+                - apt-get update
+                - apt-get install jq
             pre_build:
               commands:
-                - echo -n "$CODEBUILD_BUILD_ID" | sed "s/.*:\([[:xdigit:]]\{7\}\).*/\1/" > /tmp/build_id.out
-                - printf "%s:%s" "$REPOSITORY_URI" "$(cat /tmp/build_id.out)" > /tmp/build_tag.out
-                - printf '{"tag":"%s"}' "$(cat /tmp/build_id.out)" > /tmp/build.json
                 - $(aws ecr get-login)
+                - printf '{"tag":"%s","image":"%s"}'
+                    "$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | head -c 8)"
+                    "$REPOSITORY_URI" > build.json
             build:
               commands:
-                - docker build --tag "$(cat /tmp/build_tag.out)" .
+                - docker build --tag "$(jq -r '"\(.image):\(.tag)"' build.json)" .
             post_build:
               commands:
-                - docker push "$(cat /tmp/build_tag.out)"
+                - docker push "$(jq -r '"\(.image):\(.tag)"' build.json)"
           artifacts:
-            files: /tmp/build.json
-            discard-paths: yes
+            files: build.json
       Environment:
         ComputeType: "BUILD_GENERAL1_SMALL"
         Image: "aws/codebuild/docker:1.12.1"
