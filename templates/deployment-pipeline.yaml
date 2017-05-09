@@ -144,24 +144,19 @@ Resources:
         Location: !Sub ${ArtifactBucket}/source.zip
         Type: "S3"
         BuildSpec: |
-          version: 0.1
+          version: 0.2
           phases:
-            install:
-              commands:
-                - apt-get update
-                - apt-get install jq
             pre_build:
               commands:
                 - $(aws ecr get-login)
-                - printf '{"tag":"%s","image":"%s"}'
-                    "$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | head -c 8)"
-                    "$REPOSITORY_URI" > build.json
+                - TAG="$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | head -c 8)"
             build:
               commands:
-                - docker build --tag "$(jq -r '"\(.image):\(.tag)"' build.json)" .
+                - docker build --tag "${REPOSITORY_URI}:${TAG}" .
             post_build:
               commands:
-                - docker push "$(jq -r '"\(.image):\(.tag)"' build.json)"
+                - docker push "${REPOSITORY_URI}:${TAG}"
+                - printf '{"tag":"%s"}' $TAG > build.json
           artifacts:
             files: build.json
       Environment:
