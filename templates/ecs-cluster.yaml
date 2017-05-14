@@ -48,7 +48,6 @@ Resources:
     Type: AWS::IAM::Role
     Properties:
       Path: /
-      RoleName: !Sub ecs-${AWS::StackName}
       AssumeRolePolicyDocument: |
         {
             "Statement": [{
