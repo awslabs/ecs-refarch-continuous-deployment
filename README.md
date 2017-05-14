@@ -23,9 +23,19 @@ This creates a directory named `ecs-demo-php-simple-app` in your current directo
 
 #### 2. Create the CloudFormation stack
 
-Choose **Launch Stack** to launch the template in the US East (N. Virginia) Region in your account:
+Choose **Deploy to AWS** to launch the template in your account.
 
-[![Launch ECS Continuous Deployment into North Virginia with CloudFormation](images/cloudformation-launch-stack.png)](https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/new?stackName=ecs-cd&templateURL=https://s3.amazonaws.com/ecs-refarch-continuous-deployment/ecs-refarch-continuous-deployment.yaml)
+Region | Launch Template
+------------ | -------------
+**N. Virginia** (us-east-1) | [![Launch Stack into N. Virginia with CloudFormation](/images/deploy-to-aws.png)](https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/new?stackName=ECS-ContinuousDeployment&templateURL=https://s3.amazonaws.com/ecs-refarch-continuous-deployment-us-east-1/ecs-refarch-continuous-deployment.yaml)
+**Ohio** (us-east-2) | [![Launch Stack into Ohio with CloudFormation](/images/deploy-to-aws.png)](https://console.aws.amazon.com/cloudformation/home?region=us-east-2#/stacks/new?stackName=ECS-ContinuousDeployment&templateURL=https://s3-us-east-2.amazonaws.com/ecs-refarch-continuous-deployment-us-east-2/ecs-refarch-continuous-deployment.yaml)
+**Oregon** (us-west-2) | [![Launch Stack into Oregon with CloudFormation](/images/deploy-to-aws.png)](https://console.aws.amazon.com/cloudformation/home?region=us-west-2#/stacks/new?stackName=ECS-ContinuousDeployment&templateURL=https://s3-us-west-2.amazonaws.com/ecs-refarch-continuous-deployment-us-west-2/ecs-refarch-continuous-deployment.yaml)
+**Ireland** (eu-west-1) | [![Launch Stack into Ireland with CloudFormation](/images/deploy-to-aws.png)](https://console.aws.amazon.com/cloudformation/home?region=eu-west-1#/stacks/new?stackName=ECS-ContinuousDeployment&templateURL=https://s3-eu-west-1.amazonaws.com/ecs-refarch-continuous-deployment-eu-west-1/ecs-refarch-continuous-deployment.yaml)
+**Frankfurt** (eu-central-1) | [![Launch Stack into Frankfurt with CloudFormation](/images/deploy-to-aws.png)](https://console.aws.amazon.com/cloudformation/home?region=eu-central-1#/stacks/new?stackName=ECS-ContinuousDeployment&templateURL=https://s3-eu-central-1.amazonaws.com/ecs-refarch-continuous-deployment-eu-central-1/ecs-refarch-continuous-deployment.yaml)
+**Singapore** (ap-southeast-1) | [![Launch Stack into Singapore with CloudFormation](/images/deploy-to-aws.png)](https://console.aws.amazon.com/cloudformation/home?region=ap-southeast-1#/stacks/new?stackName=ECS-ContinuousDeployment&templateURL=https://s3-ap-southeast-1.amazonaws.com/ecs-refarch-continuous-deployment-ap-southeast-1/ecs-refarch-continuous-deployment.yaml)
+**Sydney** (ap-southeast-2) | [![Launch Stack into Sydney with CloudFormation](/images/deploy-to-aws.png)](https://console.aws.amazon.com/cloudformation/home?region=ap-southeast-2#/stacks/new?stackName=ECS-ContinuousDeployment&templateURL=https://s3-ap-southeast-2.amazonaws.com/ecs-refarch-continuous-deployment-ap-southeast-2/ecs-refarch-continuous-deployment.yaml)
+
+This reference architecture can only be deployed to Regions which have all necessary services such as AWS CodePipeline and AWS CodeBuild. See the [Region Table](https://aws.amazon.com/about-aws/global-infrastructure/regional-product-services/) for more details.
 
 The CloudFormation template requires the following parameters:
 
@@ -52,7 +62,7 @@ To test continuous deployment, make a change to src/index.php in the ecs-demo-ph
 
 To remove all resources created by this example, do the following:
 
-1. Delete the main CloudFormation stack which deletes the substacks and resources created by the exercises.
+1. Delete the main CloudFormation stack which deletes the substacks and resources.
 1. Manually delete resources which may contain files:
   - S3 bucket: `ArtifactBucket`
   - ECR repository: `Repository`
