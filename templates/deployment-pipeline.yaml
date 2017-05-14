@@ -30,7 +30,6 @@ Resources:
     Type: AWS::IAM::Role
     DeletionPolicy: Retain
     Properties:
-      RoleName: !Sub cfn-${AWS::StackName}
       Path: /
       AssumeRolePolicyDocument: |
         {
@@ -55,7 +54,6 @@ Resources:
   CodeBuildServiceRole:
     Type: AWS::IAM::Role
     Properties:
-      RoleName: !Sub cb-${AWS::StackName}
       Path: /
       AssumeRolePolicyDocument: |
         {
@@ -97,7 +95,6 @@ Resources:
   CodePipelineServiceRole:
     Type: AWS::IAM::Role
     Properties:
-      RoleName: !Sub cp-${AWS::StackName}
       Path: /
       AssumeRolePolicyDocument: |
         {

@@ -21,7 +21,6 @@ Resources:
   ECSServiceRole:
     Type: AWS::IAM::Role
     Properties:
-      RoleName: !Sub ecs-service-${AWS::StackName}
       Path: /
       AssumeRolePolicyDocument: |
         {
