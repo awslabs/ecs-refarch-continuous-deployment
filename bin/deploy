@@ -13,6 +13,26 @@ regions=(
   ap-southeast-2
 )
 
+
+function join_by()
+{
+  local IFS="$1"
+	shift
+	echo "$*"
+}
+
+function usage()
+{
+  regions_joined=$(join_by , ${regions[@]})
+  echo -e "Copies the CloudFormation templates into S3 buckets"
+  echo -e ""
+  echo -e "$0"
+  echo -e "\t-h --help"
+  echo -e "\t--bucket=$bucket"
+  echo -e "\t--regions=$regions_joined"
+  echo -e ""
+}
+
 zip deploy/templates.zip ecs-refarch-continuous-deployment.yaml templates/*
 
 for region in "${regions[@]}"
