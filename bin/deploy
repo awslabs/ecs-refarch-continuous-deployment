@@ -33,6 +33,32 @@ function usage()
   echo -e ""
 }
 
+while [ "$1" != "" ]
+do
+  PARAM=$(echo $1 | awk -F= '{print $1}')
+  VALUE=$(echo $1 | awk -F= '{print $2}')
+  case $PARAM in
+    -h | --help)
+      usage
+      exit
+      ;;
+    --bucket)
+      bucket=$VALUE
+      ;;
+    --regions)
+			unset regions
+			IFS=',' read -ra regions <<< "$VALUE"
+      ;;
+    *)
+      echo "ERROR: unknown parameter \"$PARAM\""
+      usage
+      exit 1
+      ;;
+  esac
+  shift
+done
+
+
 zip deploy/templates.zip ecs-refarch-continuous-deployment.yaml templates/*
 
 for region in "${regions[@]}"
