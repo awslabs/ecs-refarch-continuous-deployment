@@ -59,6 +59,8 @@ do
 done
 
 
+set -o xtrace
+
 zip deploy/templates.zip ecs-refarch-continuous-deployment.yaml templates/*
 
 for region in "${regions[@]}"
