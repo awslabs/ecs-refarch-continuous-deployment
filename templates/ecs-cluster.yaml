@@ -12,10 +12,34 @@ Parameters:
 
   SourceSecurityGroup:
     Type: AWS::EC2::SecurityGroup::Id
+    Default: sg-69ca460f
 
   VpcId:
     Type: AWS::EC2::VPC::Id
-
+    Default: vpc-8573a6ed
+# Miss Descriptions
+Metadata:
+  AWS::CloudFormation::Interface:
+    ParameterLabels:
+      InstanceType:
+        default: "t2.large"
+      ClusterSize:
+        default: "1"
+      Subnets:
+        default: "subnet-fe7f4e9a,subnet-bfaa9ec9,subnet-eb372f9f"
+      SourceSecurityGroup:
+        default: "sg-69ca460f"
+      VpcId:
+        default: "vpc-8573a6ed"
+    ParameterGroups:
+      - Label:
+          default: ECS Configuration
+        Parameters:
+          - InstanceType
+          - ClusterSize
+          - Subnets
+          - SourceSecurityGroup
+          - VpcId
 
 Mappings:
   AWSRegionToAMI:
@@ -36,7 +60,7 @@ Mappings:
     ap-northeast-1:
       AMI: ami-08f7956f
     ap-southeast-1:
-      AMI: ami-f4832f97
+      AMI: ami-99f588fa
     ap-southeast-2:
       AMI: ami-774b7314
     ca-central-1:
@@ -88,7 +112,7 @@ Resources:
       MinSize: !Ref ClusterSize
       MaxSize: !Ref ClusterSize
       DesiredCapacity: !Ref ClusterSize
-      Tags: 
+      Tags:
         - Key: Name
           Value: !Sub ${AWS::StackName} - ECS Host
           PropagateAtLaunch: true
