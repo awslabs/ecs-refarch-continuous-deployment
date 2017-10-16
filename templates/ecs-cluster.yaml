@@ -9,6 +9,7 @@ Parameters:
 
   Subnets:
     Type: List<AWS::EC2::Subnet::Id>
+    Default: subnet-fe7f4e9a,subnet-bfaa9ec9,subnet-eb372f9f
 
   SourceSecurityGroup:
     Type: AWS::EC2::SecurityGroup::Id
