@@ -18,29 +18,35 @@ Parameters:
   VpcId:
     Type: AWS::EC2::VPC::Id
     Default: vpc-8573a6ed
+
+  KeyName:
+    Description: "Name of an existing EC2 KeyPair to enable SSH access to the instance"
+    Type: AWS::EC2::KeyPair::KeyName
+    Default: rex201710041559
+    ConstraintDescription: must be the name of an existing EC2 KeyPair.
 # Miss Descriptions
-Metadata:
-  AWS::CloudFormation::Interface:
-    ParameterLabels:
-      InstanceType:
-        default: "t2.large"
-      ClusterSize:
-        default: "1"
-      Subnets:
-        default: "subnet-fe7f4e9a,subnet-bfaa9ec9,subnet-eb372f9f"
-      SourceSecurityGroup:
-        default: "sg-69ca460f"
-      VpcId:
-        default: "vpc-8573a6ed"
-    ParameterGroups:
-      - Label:
-          default: ECS Configuration
-        Parameters:
-          - InstanceType
-          - ClusterSize
-          - Subnets
-          - SourceSecurityGroup
-          - VpcId
+# Metadata:
+#   AWS::CloudFormation::Interface:
+#     ParameterLabels:
+#       InstanceType:
+#         default: "t2.large"
+#       ClusterSize:
+#         default: "1"
+#       Subnets:
+#         default: "subnet-fe7f4e9a,subnet-bfaa9ec9,subnet-eb372f9f"
+#       SourceSecurityGroup:
+#         default: "sg-69ca460f"
+#       VpcId:
+#         default: "vpc-8573a6ed"
+#     ParameterGroups:
+#       - Label:
+#           default: ECS Configuration
+#         Parameters:
+#           - InstanceType
+#           - ClusterSize
+#           - Subnets
+#           - SourceSecurityGroup
+#           - VpcId
 
 Mappings:
   AWSRegionToAMI:
@@ -97,7 +103,18 @@ Resources:
       GroupDescription: !Sub ${AWS::StackName}-hosts
       SecurityGroupIngress:
         - SourceSecurityGroupId: !Ref SourceSecurityGroup
-          IpProtocol: -1
+          IpProtocol: TCP
+          FromPort: '80'
+          ToPort: '80'
+      SecurityGroupEgress:
+      - IpProtocol: tcp
+        FromPort: '80'
+        ToPort: '80'
+        CidrIp: 0.0.0.0/0
+      - IpProtocol: tcp
+        FromPort: '443'
+        ToPort: '443'
+        CidrIp: 0.0.0.0/0
       VpcId: !Ref VpcId
 
   Cluster:

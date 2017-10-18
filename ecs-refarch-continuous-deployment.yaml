@@ -50,7 +50,7 @@ Resources:
   Cluster:
     Type: AWS::CloudFormation::Stack
     Properties:
-      TemplateURL: https://s3.amazonaws.com/cd-20171016/templates/ecs-cluster.yaml
+      TemplateURL: https://s3.amazonaws.com/cd-20171016/ecs-refarch-continuous-deployment/templates/ecs-cluster.yaml
       Parameters:
         SourceSecurityGroup: !GetAtt LoadBalancer.Outputs.SecurityGroup
         Subnets: !GetAtt VPC.Outputs.Subnets
@@ -59,7 +59,7 @@ Resources:
   DeploymentPipeline:
     Type: AWS::CloudFormation::Stack
     Properties:
-      TemplateURL: https://s3.amazonaws.com/cd-20171016/templates/deployment-pipeline.yaml
+      TemplateURL: https://s3.amazonaws.com/cd-20171016/ecs-refarch-continuous-deployment/templates/deployment-pipeline.yaml
       Parameters:
         Cluster: !GetAtt Cluster.Outputs.ClusterName
         GitHubUser: !Ref GitHubUser
@@ -72,7 +72,7 @@ Resources:
   LoadBalancer:
     Type: AWS::CloudFormation::Stack
     Properties:
-      TemplateURL: https://s3.amazonaws.com/cd-20171016/templates/load-balancer.yaml
+      TemplateURL: https://s3.amazonaws.com/cd-20171016/ecs-refarch-continuous-deployment/templates/load-balancer.yaml
       Parameters:
         Subnets: !GetAtt VPC.Outputs.Subnets
         VpcId: !GetAtt VPC.Outputs.VpcId
@@ -80,7 +80,7 @@ Resources:
   VPC:
     Type: AWS::CloudFormation::Stack
     Properties:
-      TemplateURL: https://s3.amazonaws.com/cd-20171016/templates/vpc.yaml
+      TemplateURL: https://s3.amazonaws.com/cd-20171016/ecs-refarch-continuous-deployment/templates/vpc.yaml
       Parameters:
         Name: !Ref AWS::StackName
         VpcCIDR: 10.215.0.0/16
