@@ -15,6 +15,12 @@ Parameters:
     Default: subnet-fe7f4e9a,subnet-bfaa9ec9,subnet-eb372f9f
     Description: Specify the subnet IDs where would you like to deploy.
 
+  KeyName:
+    Description: "Name of an existing EC2 KeyPair to enable SSH access to the instance"
+    Type: List<AWS::EC2::KeyPair::KeyName>
+    Default: rex201710041559
+    ConstraintDescription: must be the name of an existing EC2 KeyPair.
+
   GitHubUser:
     Type: String
     Description: Your username on GitHub.
@@ -50,6 +56,8 @@ Metadata:
         default: vpc-8573a6ed
       Subnets:
         default: subnet-fe7f4e9a,subnet-bfaa9ec9,subnet-eb372f9f
+      KeyName:
+        default: rex201710041559
     ParameterGroups:
       - Label:
           default: GitHub Configuration
@@ -63,9 +71,7 @@ Metadata:
         Parameters:
           - VpcId
           - Subnets
-          - GitHubUser
-          - GitHubToken
-
+          - KeyName
 
 Resources:
   Cluster:
@@ -76,6 +82,7 @@ Resources:
         SourceSecurityGroup: !GetAtt LoadBalancer.Outputs.SecurityGroup
         Subnets: !Ref Subnets
         VpcId: !Ref VpcId
+        KeyName: !Ref KeyName
 
   DeploymentPipeline:
     Type: AWS::CloudFormation::Stack

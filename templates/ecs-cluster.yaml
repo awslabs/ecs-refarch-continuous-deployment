@@ -18,7 +18,7 @@ Parameters:
 
   KeyName:
     Description: "Name of an existing EC2 KeyPair to enable SSH access to the instance"
-    Type: AWS::EC2::KeyPair::KeyName
+    Type: List<AWS::EC2::KeyPair::KeyName>
     Default: rex201710041559
     ConstraintDescription: must be the name of an existing EC2 KeyPair.
 # Miss Descriptions
@@ -103,15 +103,19 @@ Resources:
           IpProtocol: TCP
           FromPort: '80'
           ToPort: '80'
+        - IpProtocol: TCP
+          FromPort: '22'
+          ToPort: '22'
+          CidrIp: 192.168.0.0/16
       SecurityGroupEgress:
-      - IpProtocol: tcp
-        FromPort: '80'
-        ToPort: '80'
-        CidrIp: 0.0.0.0/0
-      - IpProtocol: tcp
-        FromPort: '443'
-        ToPort: '443'
-        CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: '80'
+          ToPort: '80'
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: '443'
+          ToPort: '443'
+          CidrIp: 0.0.0.0/0
       VpcId: !Ref VpcId
 
   Cluster:
