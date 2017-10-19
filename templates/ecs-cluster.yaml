@@ -9,15 +9,12 @@ Parameters:
 
   Subnets:
     Type: List<AWS::EC2::Subnet::Id>
-    Default: subnet-fe7f4e9a,subnet-bfaa9ec9,subnet-eb372f9f
 
   SourceSecurityGroup:
     Type: AWS::EC2::SecurityGroup::Id
-    Default: sg-69ca460f
 
   VpcId:
     Type: AWS::EC2::VPC::Id
-    Default: vpc-8573a6ed
 
   KeyName:
     Description: "Name of an existing EC2 KeyPair to enable SSH access to the instance"

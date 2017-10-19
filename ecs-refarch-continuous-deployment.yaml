@@ -5,6 +5,16 @@ Description: >
 
 
 Parameters:
+  VpcId:
+    Type: AWS::EC2::VPC::Id
+    Default: vpc-8573a6ed
+    Description: Specify the VPC which would you like to deploy.
+
+  Subnets:
+    Type: List<AWS::EC2::Subnet::Id>
+    Default: subnet-fe7f4e9a,subnet-bfaa9ec9,subnet-eb372f9f
+    Description: Specify the subnet IDs where would you like to deploy.
+
   GitHubUser:
     Type: String
     Description: Your username on GitHub.
@@ -36,12 +46,23 @@ Metadata:
         default: "Branch"
       GitHubToken:
         default: "Personal Access Token"
+      VpcId:
+        default: vpc-8573a6ed
+      Subnets:
+        default: subnet-fe7f4e9a,subnet-bfaa9ec9,subnet-eb372f9f
     ParameterGroups:
       - Label:
           default: GitHub Configuration
         Parameters:
           - GitHubRepo
           - GitHubBranch
+          - GitHubUser
+          - GitHubToken
+      - Label:
+          default: VPC Configuration
+        Parameters:
+          - VpcId
+          - Subnets
           - GitHubUser
           - GitHubToken
 
@@ -53,8 +74,8 @@ Resources:
       TemplateURL: https://s3.amazonaws.com/cd-20171016/ecs-refarch-continuous-deployment/templates/ecs-cluster.yaml
       Parameters:
         SourceSecurityGroup: !GetAtt LoadBalancer.Outputs.SecurityGroup
-        Subnets: !GetAtt VPC.Outputs.Subnets
-        VpcId: !GetAtt VPC.Outputs.VpcId
+        Subnets: !Ref Subnets
+        VpcId: !Ref VpcId
 
   DeploymentPipeline:
     Type: AWS::CloudFormation::Stack
@@ -74,18 +95,20 @@ Resources:
     Properties:
       TemplateURL: https://s3.amazonaws.com/cd-20171016/ecs-refarch-continuous-deployment/templates/load-balancer.yaml
       Parameters:
-        Subnets: !GetAtt VPC.Outputs.Subnets
-        VpcId: !GetAtt VPC.Outputs.VpcId
+        # Subnets: !GetAtt VPC.Outputs.Subnets
+        # VpcId: !GetAtt VPC.Outputs.VpcId
+        Subnets: !Ref VpcId
+        VpcId: !Ref Subnets
 
-  VPC:
-    Type: AWS::CloudFormation::Stack
-    Properties:
-      TemplateURL: https://s3.amazonaws.com/cd-20171016/ecs-refarch-continuous-deployment/templates/vpc.yaml
-      Parameters:
-        Name: !Ref AWS::StackName
-        VpcCIDR: 10.215.0.0/16
-        Subnet1CIDR: 10.215.10.0/24
-        Subnet2CIDR: 10.215.20.0/24
+  # VPC:
+  #   Type: AWS::CloudFormation::Stack
+  #   Properties:
+  #     TemplateURL: https://s3.amazonaws.com/cd-20171016/ecs-refarch-continuous-deployment/templates/vpc.yaml
+  #     Parameters:
+  #       Name: !Ref AWS::StackName
+  #       VpcCIDR: !Ref
+  #       Subnet1CIDR: 10.215.10.0/24
+  #       Subnet2CIDR: 10.215.20.0/24
 
 
 Outputs:
