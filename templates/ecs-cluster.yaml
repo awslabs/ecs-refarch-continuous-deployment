@@ -18,7 +18,7 @@ Parameters:
 
   KeyName:
     Description: "Name of an existing EC2 KeyPair to enable SSH access to the instance"
-    Type: List<AWS::EC2::KeyPair::KeyName>
+    Type: AWS::EC2::KeyPair::KeyName
     Default: rex201710041559
     ConstraintDescription: must be the name of an existing EC2 KeyPair.
 # Miss Descriptions
@@ -140,7 +140,7 @@ Resources:
         Timeout: PT15M
     UpdatePolicy:
       AutoScalingRollingUpdate:
-        MinInstancesInService: 1
+        MinInstancesInService: 0
         MaxBatchSize: 1
         PauseTime: PT15M
         WaitOnResourceSignals: true
@@ -180,6 +180,7 @@ Resources:
       ImageId: !FindInMap [ AWSRegionToAMI, !Ref "AWS::Region", AMI ]
       InstanceType: !Ref InstanceType
       IamInstanceProfile: !Ref InstanceProfile
+      KeyName: !Ref KeyName
       SecurityGroups:
         - !Ref SecurityGroup
       UserData:

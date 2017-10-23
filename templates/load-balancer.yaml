@@ -1,10 +1,9 @@
 Parameters:
   VpcId:
-    Type: String
+    Type: AWS::EC2::VPC::Id
 
   Subnets:
     Type: List<AWS::EC2::Subnet::Id>
-
 
 Resources:
   SecurityGroup:

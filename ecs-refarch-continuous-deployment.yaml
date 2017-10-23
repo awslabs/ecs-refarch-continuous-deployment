@@ -11,18 +11,19 @@ Parameters:
     Description: Specify the VPC which would you like to deploy.
 
   Subnets:
-    Type: List<AWS::EC2::Subnet::Id>
-    Default: subnet-fe7f4e9a,subnet-bfaa9ec9,subnet-eb372f9f
+    Type: String
+    Default: subnet-fe7f4e9a,subnet-eb372f9f
     Description: Specify the subnet IDs where would you like to deploy.
 
   KeyName:
     Description: "Name of an existing EC2 KeyPair to enable SSH access to the instance"
-    Type: List<AWS::EC2::KeyPair::KeyName>
+    Type: AWS::EC2::KeyPair::KeyName
     Default: rex201710041559
     ConstraintDescription: must be the name of an existing EC2 KeyPair.
 
   GitHubUser:
     Type: String
+    Default: lyroid
     Description: Your username on GitHub.
 
   GitHubRepo:
@@ -37,6 +38,7 @@ Parameters:
 
   GitHubToken:
     Type: String
+    Default: 623d2a78f6f3de516771703cd5ba8b93a4f65508
     Description: >
       Token for the user specified above. (https://github.com/settings/tokens)
 
@@ -104,8 +106,8 @@ Resources:
       Parameters:
         # Subnets: !GetAtt VPC.Outputs.Subnets
         # VpcId: !GetAtt VPC.Outputs.VpcId
-        Subnets: !Ref VpcId
-        VpcId: !Ref Subnets
+        Subnets: !Ref Subnets
+        VpcId: !Ref VpcId
 
   # VPC:
   #   Type: AWS::CloudFormation::Stack
