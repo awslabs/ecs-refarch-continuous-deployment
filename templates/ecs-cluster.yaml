@@ -100,22 +100,20 @@ Resources:
       GroupDescription: !Sub ${AWS::StackName}-hosts
       SecurityGroupIngress:
         - SourceSecurityGroupId: !Ref SourceSecurityGroup
-          IpProtocol: TCP
-          FromPort: '80'
-          ToPort: '80'
+          IpProtocol: -1
         - IpProtocol: TCP
           FromPort: '22'
           ToPort: '22'
           CidrIp: 192.168.0.0/16
-      SecurityGroupEgress:
-        - IpProtocol: tcp
-          FromPort: '80'
-          ToPort: '80'
-          CidrIp: 0.0.0.0/0
-        - IpProtocol: tcp
-          FromPort: '443'
-          ToPort: '443'
-          CidrIp: 0.0.0.0/0
+      # SecurityGroupEgress:
+      #   - IpProtocol: tcp
+      #     FromPort: '80'
+      #     ToPort: '80'
+      #     CidrIp: 0.0.0.0/0
+      #   - IpProtocol: tcp
+      #     FromPort: '443'
+      #     ToPort: '443'
+      #     CidrIp: 0.0.0.0/0
       VpcId: !Ref VpcId
 
   Cluster:
