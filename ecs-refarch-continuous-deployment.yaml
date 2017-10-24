@@ -23,7 +23,7 @@ Parameters:
 
   GitHubUser:
     Type: String
-    Default: lyroid
+    Default: 
     Description: Your username on GitHub.
 
   GitHubRepo:
@@ -38,7 +38,7 @@ Parameters:
 
   GitHubToken:
     Type: String
-    Default: 623d2a78f6f3de516771703cd5ba8b93a4f65508
+    Default:
     Description: >
       Token for the user specified above. (https://github.com/settings/tokens)
 
