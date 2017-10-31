@@ -41,91 +41,77 @@ Resources:
       DesiredCount: !Ref DesiredCount
       TaskDefinition: !Ref TaskDefinition
       LoadBalancers:
-        - ContainerName: ${AWS::StackName}-container
+        - ContainerName: nagios-app
           ContainerPort: 80
           TargetGroupArn: !Ref TargetGroup
+
+  LogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Ref Cluster
 
   TaskDefinition:
     Type: AWS::ECS::TaskDefinition
     Properties:
       Family: !Sub ${AWS::StackName}-app
       ContainerDefinitions:
-        - Name: ${AWS::StackName}-container
+        - Name: nagios-app
           Image: !Sub ${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/${Repository}:${Tag}
-          EntryPoint:
-            - /usr/sbin/apache2
-            - -D
-            - FOREGROUND
           Essential: true
           Memory: 128
+          EntryPoint:
+            - --name nagios4
           LogConfiguration:
             LogDriver: awslogs
             Options:
-              awslogs-group: awslogs-ecs-nagios-20171011
+              awslogs-group: !Ref LogGroup
               awslogs-region: !Ref 'AWS::Region'
-          # awslogs-stream-prefix: ecs-demo-app
-          # MountPoints:
-            - SourceVolume: my-vol
-              ContainerPath: /var/www/my-vol
           PortMappings:
             - ContainerPort: 80
-          # Environment:
-          #   - Name: Tag
-          #     Value: !Ref Tag
-          #   - Name: PATH
-          #     Value: /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
-          #   - Name: NAGIOS_USER
-          #     Value: nagios
-          #   - Name: NAGIOSADMIN_USER
-          #     Value: nagiosadmin
-          #   - Name: NG_CGI_DIR
-          #     Value:  /opt/nagios/sbin
-          #   - Name: APACHE_RUN_USER
-          #     Value: nagios
-          #   - Name: NAGIOS_TIMEZONE
-          #     Value: UTC
-          #   - Name: NAGIOS_HOME
-          #     Value: /opt/nagios
-          #   - Name: NG_CGI_URL
-          #     Value: /cgi-bin
-          #   - Name: APACHE_RUN_GROUP
-          #     Value: nagios
-          #   - Name: NAGIOS_PLUGINS_BRANCH
-          #     Value: release-2.2.1
-          #   - Name: NG_WWW_DIR
-          #     Value: /opt/nagios/share/nagiosgraph
-          #   - Name: NRPE_BRANCH
-          #     Value: nrpe-3.2.1
-          #   - Name: NAGIOS_CMDGROUP
-          #     Value: nagios
-          #   - Name: DEBIAN_FRONTEND
-          #     Value: noninteractive
-          #   - Name: NAGIOS_FQDN
-          #     Value: nagios.example.com
-          #   - Name: NAGIOSADMIN_PASS
-          #     Value: ~/.ssh/id_rsa_Xsh01
-          #   - Name: NAGIOS_CMDUSER
-          #     Value: nagios
-          #   - Name: APACHE_LOCK_DIR
-          #     Value: /var/run
-          #   - Name: NAGIOS_GROUP
-          #     Value: nagios
-          #   - Name: NG_NAGIOS_CONFIG_FILE
-          #     Value: /opt/nagios/etc/nagios.cfg
-          #   - Name: APACHE_LOG_DIR
-          #     Value: /var/log/apache2
-          #   - Name: NAGIOS_BRANCH
-          #     Value: nagios-4.3.4
-        - Name: busybox
-          Image: busybox
-          EntryPoint:
-            - sh
-            - -c
-          Essential: false
-          Memory: 128
-          VolumesFrom:
-            - SourceContainer: ${AWS::StackName}-container
-          Command:
-            - /bin/sh -c "while true; do /bin/date > /var/www/my-vol/date; sleep 1; done"
-      Volumes:
-        - Name: my-vol
+          Environment:
+            - Name: Tag
+              Value: !Ref Tag
+            - Name: PATH
+              Value: /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+            - Name: NAGIOS_USER
+              Value: nagios
+            - Name: NAGIOSADMIN_USER
+              Value: nagiosadmin
+            - Name: NG_CGI_DIR
+              Value:  /opt/nagios/sbin
+            - Name: APACHE_RUN_USER
+              Value: nagios
+            - Name: NAGIOS_TIMEZONE
+              Value: UTC
+            - Name: NAGIOS_HOME
+              Value: /opt/nagios
+            - Name: NG_CGI_URL
+              Value: /cgi-bin
+            - Name: APACHE_RUN_GROUP
+              Value: nagios
+            - Name: NAGIOS_PLUGINS_BRANCH
+              Value: release-2.2.1
+            - Name: NG_WWW_DIR
+              Value: /opt/nagios/share/nagiosgraph
+            - Name: NRPE_BRANCH
+              Value: nrpe-3.2.1
+            - Name: NAGIOS_CMDGROUP
+              Value: nagios
+            - Name: DEBIAN_FRONTEND
+              Value: noninteractive
+            - Name: NAGIOS_FQDN
+              Value: nagios.example.com
+            - Name: NAGIOSADMIN_PASS
+              Value: ~/.ssh/id_rsa_Xsh01
+            - Name: NAGIOS_CMDUSER
+              Value: nagios
+            - Name: APACHE_LOCK_DIR
+              Value: /var/run
+            - Name: NAGIOS_GROUP
+              Value: nagios
+            - Name: NG_NAGIOS_CONFIG_FILE
+              Value: /opt/nagios/etc/nagios.cfg
+            - Name: APACHE_LOG_DIR
+              Value: /var/log/apache2
+            - Name: NAGIOS_BRANCH
+              Value: nagios-4.3.4
