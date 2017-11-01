@@ -59,8 +59,6 @@ Resources:
           Image: !Sub ${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/${Repository}:${Tag}
           Essential: true
           Memory: 128
-          EntryPoint:
-            - --name nagios4
           LogConfiguration:
             LogDriver: awslogs
             Options:
