@@ -50,6 +50,7 @@ Resources:
                   - ecs:*
                   - ecr:*
                   - iam:*
+                  - logs:*
 
   CodeBuildServiceRole:
     Type: AWS::IAM::Role

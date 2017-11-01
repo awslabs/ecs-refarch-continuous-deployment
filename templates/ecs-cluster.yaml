@@ -16,6 +16,34 @@ Parameters:
   VpcId:
     Type: AWS::EC2::VPC::Id
 
+  KeyName:
+    Description: "Name of an existing EC2 KeyPair to enable SSH access to the instance"
+    Type: AWS::EC2::KeyPair::KeyName
+    Default: rex201710041559
+    ConstraintDescription: must be the name of an existing EC2 KeyPair.
+# Miss Descriptions
+# Metadata:
+#   AWS::CloudFormation::Interface:
+#     ParameterLabels:
+#       InstanceType:
+#         default: "t2.large"
+#       ClusterSize:
+#         default: "1"
+#       Subnets:
+#         default: "subnet-fe7f4e9a,subnet-bfaa9ec9,subnet-eb372f9f"
+#       SourceSecurityGroup:
+#         default: "sg-69ca460f"
+#       VpcId:
+#         default: "vpc-8573a6ed"
+#     ParameterGroups:
+#       - Label:
+#           default: ECS Configuration
+#         Parameters:
+#           - InstanceType
+#           - ClusterSize
+#           - Subnets
+#           - SourceSecurityGroup
+#           - VpcId
 
 Mappings:
   AWSRegionToAMI:
@@ -36,7 +64,7 @@ Mappings:
     ap-northeast-1:
       AMI: ami-08f7956f
     ap-southeast-1:
-      AMI: ami-f4832f97
+      AMI: ami-99f588fa
     ap-southeast-2:
       AMI: ami-774b7314
     ca-central-1:
@@ -73,6 +101,19 @@ Resources:
       SecurityGroupIngress:
         - SourceSecurityGroupId: !Ref SourceSecurityGroup
           IpProtocol: -1
+        - IpProtocol: TCP
+          FromPort: '22'
+          ToPort: '22'
+          CidrIp: 192.168.0.0/16
+      # SecurityGroupEgress:
+      #   - IpProtocol: tcp
+      #     FromPort: '80'
+      #     ToPort: '80'
+      #     CidrIp: 0.0.0.0/0
+      #   - IpProtocol: tcp
+      #     FromPort: '443'
+      #     ToPort: '443'
+      #     CidrIp: 0.0.0.0/0
       VpcId: !Ref VpcId
 
   Cluster:
@@ -88,7 +129,7 @@ Resources:
       MinSize: !Ref ClusterSize
       MaxSize: !Ref ClusterSize
       DesiredCapacity: !Ref ClusterSize
-      Tags: 
+      Tags:
         - Key: Name
           Value: !Sub ${AWS::StackName} - ECS Host
           PropagateAtLaunch: true
@@ -97,7 +138,7 @@ Resources:
         Timeout: PT15M
     UpdatePolicy:
       AutoScalingRollingUpdate:
-        MinInstancesInService: 1
+        MinInstancesInService: 0
         MaxBatchSize: 1
         PauseTime: PT15M
         WaitOnResourceSignals: true
@@ -137,6 +178,7 @@ Resources:
       ImageId: !FindInMap [ AWSRegionToAMI, !Ref "AWS::Region", AMI ]
       InstanceType: !Ref InstanceType
       IamInstanceProfile: !Ref InstanceProfile
+      KeyName: !Ref KeyName
       SecurityGroups:
         - !Ref SecurityGroup
       UserData:
