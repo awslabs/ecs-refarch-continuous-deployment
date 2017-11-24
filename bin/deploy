@@ -7,14 +7,15 @@ regions=(
   ap-northeast-1
   ap-southeast-1
   ap-southeast-2
+  ca-central-1
   eu-central-1
   eu-west-1
+  eu-west-2
   us-east-1
   us-east-2
+  us-west-1
   us-west-2
 )
-
-zip deploy/templates.zip ecs-refarch-continuous-deployment.yaml templates/*
 
 for region in "${regions[@]}"
 do
@@ -30,8 +31,6 @@ do
     --bucket "${bucket}-${region}" \
     --versioning-configuration Status=Enabled \
     --region "$region"
-
-  aws s3 cp deploy/templates.zip "s3://${bucket}-${region}" --region "$region"
 
   aws s3 cp ecs-refarch-continuous-deployment.yaml "s3://${bucket}-${region}" \
     --region "$region"
