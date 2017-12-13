@@ -11,13 +11,10 @@ Parameters:
   GitHubUser:
     Type: String
 
-  TargetGroup:
-    Type: String
-
   Cluster:
     Type: String
 
-  TemplateBucket:
+  Service:
     Type: String
 
 
@@ -25,31 +22,6 @@ Resources:
   Repository:
     Type: AWS::ECR::Repository
     DeletionPolicy: Retain
-
-  CloudFormationExecutionRole:
-    Type: AWS::IAM::Role
-    DeletionPolicy: Retain
-    Properties:
-      Path: /
-      AssumeRolePolicyDocument: |
-        {
-            "Statement": [{
-                "Effect": "Allow",
-                "Principal": { "Service": [ "cloudformation.amazonaws.com" ]},
-                "Action": [ "sts:AssumeRole" ]
-            }]
-        }
-      Policies:
-        - PolicyName: root
-          PolicyDocument:
-            Version: 2012-10-17
-            Statement:
-              - Resource: "*"
-                Effect: Allow
-                Action:
-                  - ecs:*
-                  - ecr:*
-                  - iam:*
 
   CodeBuildServiceRole:
     Type: AWS::IAM::Role
@@ -111,8 +83,6 @@ Resources:
             Statement:
               - Resource:
                   - !Sub arn:aws:s3:::${ArtifactBucket}/*
-                  - !Sub arn:aws:s3:::${TemplateBucket}
-                  - !Sub arn:aws:s3:::${TemplateBucket}/*
                 Effect: Allow
                 Action:
                   - s3:PutObject
@@ -122,9 +92,9 @@ Resources:
               - Resource: "*"
                 Effect: Allow
                 Action:
+                  - ecs:*
                   - codebuild:StartBuild
                   - codebuild:BatchGetBuilds
-                  - cloudformation:*
                   - iam:PassRole
 
   ArtifactBucket:
@@ -147,15 +117,16 @@ Resources:
               commands:
                 - $(aws ecr get-login)
                 - TAG="$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | head -c 8)"
+                - IMAGE_URI="${REPOSITORY_URI}:${TAG}"
             build:
               commands:
-                - docker build --tag "${REPOSITORY_URI}:${TAG}" .
+                - docker build --tag "$IMAGE_URI" .
             post_build:
               commands:
-                - docker push "${REPOSITORY_URI}:${TAG}"
-                - printf '{"tag":"%s"}' $TAG > build.json
+                - docker push "$IMAGE_URI"
+                - printf '[{"name":"simple-app","imageUri":"%s"}]' "$IMAGE_URI" > images.json
           artifacts:
-            files: build.json
+            files: images.json
       Environment:
         ComputeType: "BUILD_GENERAL1_SMALL"
         Image: "aws/codebuild/docker:1.12.1"
@@ -192,18 +163,6 @@ Resources:
               OutputArtifacts:
                 - Name: App
               RunOrder: 1
-            - Name: Template
-              ActionTypeId:
-                Category: Source
-                Owner: AWS
-                Version: 1
-                Provider: S3
-              OutputArtifacts:
-                - Name: Template
-              RunOrder: 1
-              Configuration:
-                S3Bucket: !Ref TemplateBucket
-                S3ObjectKey: templates.zip
         - Name: Build
           Actions:
             - Name: Build
@@ -226,24 +185,12 @@ Resources:
                 Category: Deploy
                 Owner: AWS
                 Version: 1
-                Provider: CloudFormation
+                Provider: ECS
               Configuration:
-                ChangeSetName: Deploy
-                ActionMode: CREATE_UPDATE
-                StackName: !Sub "${AWS::StackName}-Service"
-                Capabilities: CAPABILITY_NAMED_IAM
-                TemplatePath: Template::templates/service.yaml
-                RoleArn: !GetAtt CloudFormationExecutionRole.Arn
-                ParameterOverrides: !Sub |
-                  {
-                    "Tag" : { "Fn::GetParam" : [ "BuildOutput", "build.json", "tag" ] },
-                    "DesiredCount": "1",
-                    "Cluster": "${Cluster}",
-                    "TargetGroup": "${TargetGroup}",
-                    "Repository": "${Repository}"
-                  }
+                ClusterName: !Ref Cluster
+                ServiceName: !Ref Service
+                FileName: images.json
               InputArtifacts:
-                - Name: Template
                 - Name: BuildOutput
               RunOrder: 1
 
