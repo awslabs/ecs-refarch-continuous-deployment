@@ -2,7 +2,7 @@
 
 set -o errexit -o xtrace
 
-bucket=ecs-refarch-continuous-deployment
+bucket=ecs-refarch-continuous-deployment-v2
 regions=(
   ap-northeast-1
   ap-southeast-1
@@ -24,7 +24,7 @@ do
 
   aws s3api put-bucket-policy \
     --bucket "${bucket}-${region}" \
-    --policy "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Principal\":\"*\",\"Action\":[\"s3:GetObject\",\"s3:GetObjectVersion\"],\"Resource\":\"arn:aws:s3:::ecs-refarch-continuous-deployment-${region}/*\"},{\"Effect\":\"Allow\",\"Principal\":\"*\",\"Action\":[\"s3:ListBucket\",\"s3:GetBucketVersioning\"],\"Resource\":\"arn:aws:s3:::ecs-refarch-continuous-deployment-${region}\"}]}" \
+    --policy "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Principal\":\"*\",\"Action\":[\"s3:GetObject\",\"s3:GetObjectVersion\"],\"Resource\":\"arn:aws:s3:::${bucket}-${region}/*\"},{\"Effect\":\"Allow\",\"Principal\":\"*\",\"Action\":[\"s3:ListBucket\",\"s3:GetBucketVersioning\"],\"Resource\":\"arn:aws:s3:::${bucket}-${region}\"}]}" \
     --region "$region"
 
   aws s3api put-bucket-versioning \
