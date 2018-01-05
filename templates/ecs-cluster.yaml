@@ -20,27 +20,31 @@ Parameters:
 Mappings:
   AWSRegionToAMI:
     us-east-2:
-      AMI: ami-58f5db3d
+      AMI: ami-901338f5
     us-east-1:
-      AMI: ami-fad25980
+      AMI: ami-13401669
     us-west-2:
-      AMI: ami-7114c909
+      AMI: ami-9a02a9e2
     us-west-1:
-      AMI: ami-62e0d802
+      AMI: ami-b3adacd3
+    eu-west-3:
+      AMI: ami-bd10a7c0
     eu-west-2:
-      AMI: ami-dbfee1bf
+      AMI: ami-acd5cdc8
     eu-west-1:
-      AMI: ami-4cbe0935
+      AMI: ami-7827b301
     eu-central-1:
-      AMI: ami-05991b6a
+      AMI: ami-b378e8dc
+    ap-northeast-2:
+      AMI: ami-d6f454b8
     ap-northeast-1:
-      AMI: ami-56bd0030
+      AMI: ami-af46dbc9
     ap-southeast-2:
-      AMI: ami-14b55f76
+      AMI: ami-b88e7cda
     ap-southeast-1:
-      AMI: ami-1bdc8b78
+      AMI: ami-fec3b482
     ca-central-1:
-      AMI: ami-918b30f5
+      AMI: ami-e8cb4e8c
 
 Resources:
   ECSRole:
