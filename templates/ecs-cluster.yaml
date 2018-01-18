@@ -1,4 +1,15 @@
+---
+AWSTemplateFormatVersion: 2010-09-09
+
+
 Parameters:
+  LaunchType:
+    Type: String
+    Default: Fargate
+    AllowedValues:
+      - Fargate
+      - EC2
+
   InstanceType:
     Type: String
     Default: t2.micro
@@ -15,6 +26,10 @@ Parameters:
 
   VpcId:
     Type: AWS::EC2::VPC::Id
+
+
+Conditions:
+  EC2: !Equals [ !Ref LaunchType, "EC2" ]
 
 
 Mappings:
@@ -46,24 +61,25 @@ Mappings:
     ca-central-1:
       AMI: ami-e8cb4e8c
 
+
 Resources:
   ECSRole:
     Type: AWS::IAM::Role
+    Condition: EC2
     Properties:
       Path: /
-      AssumeRolePolicyDocument: |
-        {
-            "Statement": [{
-                "Effect": "Allow",
-                "Principal": { "Service": [ "ec2.amazonaws.com" ]},
-                "Action": [ "sts:AssumeRole" ]
-            }]
-        }
+      AssumeRolePolicyDocument:
+        Statement:
+          - Action: sts:AssumeRole
+            Effect: Allow
+            Principal:
+              Service: ec2.amazonaws.com
       ManagedPolicyArns:
         - arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role
 
   InstanceProfile:
     Type: AWS::IAM::InstanceProfile
+    Condition: EC2
     Properties:
       Path: /
       Roles:
@@ -71,6 +87,7 @@ Resources:
 
   SecurityGroup:
     Type: "AWS::EC2::SecurityGroup"
+    Condition: EC2
     Properties:
       GroupDescription: !Sub ${AWS::StackName}-hosts
       SecurityGroupIngress:
@@ -85,6 +102,7 @@ Resources:
 
   AutoScalingGroup:
     Type: AWS::AutoScaling::AutoScalingGroup
+    Condition: EC2
     Properties:
       VPCZoneIdentifier: !Ref Subnets
       LaunchConfigurationName: !Ref LaunchConfiguration
@@ -107,6 +125,7 @@ Resources:
 
   LaunchConfiguration:
     Type: AWS::AutoScaling::LaunchConfiguration
+    Condition: EC2
     Metadata:
       AWS::CloudFormation::Init:
         config:

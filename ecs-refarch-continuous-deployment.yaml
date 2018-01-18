@@ -1,10 +1,27 @@
+---
+AWSTemplateFormatVersion: 2010-09-09
+
+
 Description: >
-  This template illustrates how to use AWS CodeBuild and AWS CodePipeline to
-  achieve continuous deployment of source code from a GitHub repository via a
-  Docker container to an Amazon EC2 Container Service cluster.
+  This template shows how to use AWS CodePipeline and AWS CodeBuild to build an
+  automated continuous deployment pipeline to Amazon Elastic Container Service
+  (Amazon ECS) using clusters powered by AWS Fargate or Amazon Elastic Compute
+  Cloud (Amazon EC2).
 
 
 Parameters:
+  LaunchType:
+    Type: String
+    Default: Fargate
+    AllowedValues:
+      - Fargate
+      - EC2
+    Description: >
+      The launch type for your service. Selecting EC2 will create an Auto
+      Scaling group of t2.micro instances for your cluster. See
+      https://docs.aws.amazon.com/AmazonECS/latest/developerguide/launch_types.html
+      to learn more about launch types.
+
   GitHubUser:
     Type: String
     Description: Your username on GitHub.
@@ -25,6 +42,12 @@ Parameters:
     Description: >
       Token for the user specified above. (https://github.com/settings/tokens)
 
+  TemplateBucket:
+    Type: String
+    Default: ecs-refarch-continuous-deployment
+    Description: >
+      The S3 bucket from which to fetch the templates used by this stack.
+
 
 Metadata:
   AWS::CloudFormation::Interface:
@@ -37,7 +60,13 @@ Metadata:
         default: "Branch"
       GitHubToken:
         default: "Personal Access Token"
+      LaunchType:
+        default: "Launch Type"
     ParameterGroups:
+      - Label:
+          default: Cluster Configuration
+        Parameters:
+          - LaunchType
       - Label:
           default: GitHub Configuration
         Parameters:
@@ -45,14 +74,19 @@ Metadata:
           - GitHubBranch
           - GitHubUser
           - GitHubToken
+      - Label:
+          default: Stack Configuration
+        Parameters:
+          - TemplateBucket
 
 
 Resources:
   Cluster:
     Type: AWS::CloudFormation::Stack
     Properties:
-      TemplateURL: https://s3.amazonaws.com/ecs-refarch-continuous-deployment-v2-us-east-1/templates/ecs-cluster.yaml
+      TemplateURL: !Sub "https://s3.amazonaws.com/${TemplateBucket}/templates/ecs-cluster.yaml"
       Parameters:
+        LaunchType: !Ref LaunchType
         SourceSecurityGroup: !GetAtt LoadBalancer.Outputs.SecurityGroup
         Subnets: !GetAtt VPC.Outputs.Subnets
         VpcId: !GetAtt VPC.Outputs.VpcId
@@ -60,10 +94,10 @@ Resources:
   DeploymentPipeline:
     Type: AWS::CloudFormation::Stack
     Properties:
-      TemplateURL: https://s3.amazonaws.com/ecs-refarch-continuous-deployment-v2-us-east-1/templates/deployment-pipeline.yaml
+      TemplateURL: !Sub "https://s3.amazonaws.com/${TemplateBucket}/templates/deployment-pipeline.yaml"
       Parameters:
         Cluster: !GetAtt Cluster.Outputs.ClusterName
-        Service: !GetAtt Service.Outputs.ServiceName
+        Service: !GetAtt Service.Outputs.Service
         GitHubUser: !Ref GitHubUser
         GitHubToken: !Ref GitHubToken
         GitHubRepo: !Ref GitHubRepo
@@ -72,15 +106,16 @@ Resources:
   LoadBalancer:
     Type: AWS::CloudFormation::Stack
     Properties:
-      TemplateURL: https://s3.amazonaws.com/ecs-refarch-continuous-deployment-v2-us-east-1/templates/load-balancer.yaml
+      TemplateURL: !Sub "https://s3.amazonaws.com/${TemplateBucket}/templates/load-balancer.yaml"
       Parameters:
+        LaunchType: !Ref LaunchType
         Subnets: !GetAtt VPC.Outputs.Subnets
         VpcId: !GetAtt VPC.Outputs.VpcId
 
   VPC:
     Type: AWS::CloudFormation::Stack
     Properties:
-      TemplateURL: https://s3.amazonaws.com/ecs-refarch-continuous-deployment-v2-us-east-1/templates/vpc.yaml
+      TemplateURL: !Sub "https://s3.amazonaws.com/${TemplateBucket}/templates/vpc.yaml"
       Parameters:
         Name: !Ref AWS::StackName
         VpcCIDR: 10.215.0.0/16
@@ -90,10 +125,13 @@ Resources:
   Service:
     Type: AWS::CloudFormation::Stack
     Properties:
-      TemplateURL: https://s3.amazonaws.com/ecs-refarch-continuous-deployment-v2-us-east-1/templates/service.yaml
+      TemplateURL: !Sub "https://s3.amazonaws.com/${TemplateBucket}/templates/service.yaml"
       Parameters:
         Cluster: !GetAtt Cluster.Outputs.ClusterName
+        LaunchType: !Ref LaunchType
         TargetGroup: !GetAtt LoadBalancer.Outputs.TargetGroup
+        SourceSecurityGroup: !GetAtt LoadBalancer.Outputs.SecurityGroup
+        Subnets: !GetAtt VPC.Outputs.Subnets
 
 
 Outputs:

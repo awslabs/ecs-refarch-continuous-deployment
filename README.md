@@ -2,7 +2,7 @@
 
 The ECS Continuous Deployment reference architecture demonstrates how to achieve
 [continuous deployment][continuous-deployment] of an application to Amazon
-Elastic Container Serivice (Amazon ECS) using AWS CodePipeline and AWS
+Elastic Container Service (Amazon ECS) using AWS CodePipeline and AWS
 CodeBuild. With continuous deployment, software revisions are deployed to a
 production environment automatically without explicit approval from a developer,
 making the entire software release process automated.
@@ -10,7 +10,12 @@ making the entire software release process automated.
 Launching this AWS CloudFormation stack provisions a continuous deployment
 process that uses AWS CodePipeline to monitor a GitHub repository for new
 commits and AWS CodeBuild to create a new Docker container image and to push it
-into Amazon Elastic Container Registry (Amazon ECR)
+into Amazon Elastic Container Registry (Amazon ECR).
+
+When creating this stack, you can opt to deploy the service onto [AWS
+Fargate][fargate] or [Amazon EC2][ec2]. AWS Fargate allows you to run containers
+without managing clusters or services. If you choose Amazon EC2, an Auto Scaling
+group of t2.micro instances will be created to host your service.
 
 [![](images/architecture.png)][architecture]
 
@@ -36,20 +41,20 @@ directory, which contains the code for the Amazon ECS sample app.
 
 Choose **Deploy to AWS** to launch the template in your account.
 
-Region | Launch Template
------------- | -------------
-**US East (N. Virginia)** (us-east-1) | [![Launch Stack into US East (N. Virginia) with CloudFormation](/images/deploy-to-aws.png)](https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/new?stackName=ECS-ContinuousDeployment&templateURL=https://s3.amazonaws.com/ecs-refarch-continuous-deployment-v2-us-east-1/ecs-refarch-continuous-deployment.yaml)
-**US East (Ohio)** (us-east-2) | [![Launch Stack into US East (Ohio) with CloudFormation](/images/deploy-to-aws.png)](https://console.aws.amazon.com/cloudformation/home?region=us-east-2#/stacks/new?stackName=ECS-ContinuousDeployment&templateURL=https://s3.amazonaws.com/ecs-refarch-continuous-deployment-v2-us-east-2/ecs-refarch-continuous-deployment.yaml)
-**US West (N. California)** (us-west-1) | [![Launch Stack into US West (N. California) with CloudFormation](/images/deploy-to-aws.png)](https://console.aws.amazon.com/cloudformation/home?region=us-west-1#/stacks/new?stackName=ECS-ContinuousDeployment&templateURL=https://s3.amazonaws.com/ecs-refarch-continuous-deployment-v2-us-west-1/ecs-refarch-continuous-deployment.yaml)
-**US West (Oregon)** (us-west-2) | [![Launch Stack into US West (Oregon) with CloudFormation](/images/deploy-to-aws.png)](https://console.aws.amazon.com/cloudformation/home?region=us-west-2#/stacks/new?stackName=ECS-ContinuousDeployment&templateURL=https://s3.amazonaws.com/ecs-refarch-continuous-deployment-v2-us-west-2/ecs-refarch-continuous-deployment.yaml)
-**EU (Ireland)** (eu-west-1) | [![Launch Stack into EU (Ireland) with CloudFormation](/images/deploy-to-aws.png)](https://console.aws.amazon.com/cloudformation/home?region=eu-west-1#/stacks/new?stackName=ECS-ContinuousDeployment&templateURL=https://s3.amazonaws.com/ecs-refarch-continuous-deployment-v2-eu-west-1/ecs-refarch-continuous-deployment.yaml)
-**EU (London)** (eu-west-2) | [![Launch Stack into EU (London) with CloudFormation](/images/deploy-to-aws.png)](https://console.aws.amazon.com/cloudformation/home?region=eu-west-2#/stacks/new?stackName=ECS-ContinuousDeployment&templateURL=https://s3.amazonaws.com/ecs-refarch-continuous-deployment-v2-eu-west-2/ecs-refarch-continuous-deployment.yaml)
-**EU (Frankfurt)** (eu-central-1) | [![Launch Stack into Asia Pacific (Frankfurt) with CloudFormation](/images/deploy-to-aws.png)](https://console.aws.amazon.com/cloudformation/home?region=eu-central-1#/stacks/new?stackName=ECS-ContinuousDeployment&templateURL=https://s3.amazonaws.com/ecs-refarch-continuous-deployment-v2-eu-central-1/ecs-refarch-continuous-deployment.yaml)
-**Asia Pacific (Singapore)** (ap-southeast-1) | [![Launch Stack into Asia Pacific (Singapore) with CloudFormation](/images/deploy-to-aws.png)](https://console.aws.amazon.com/cloudformation/home?region=ap-southeast-1#/stacks/new?stackName=ECS-ContinuousDeployment&templateURL=https://s3.amazonaws.com/ecs-refarch-continuous-deployment-v2-ap-southeast-1/ecs-refarch-continuous-deployment.yaml)
-**Asia Pacific (Sydney)** (ap-southeast-2) | [![Launch Stack into Asia Pacific (Sydney) with CloudFormation](/images/deploy-to-aws.png)](https://console.aws.amazon.com/cloudformation/home?region=ap-southeast-2#/stacks/new?stackName=ECS-ContinuousDeployment&templateURL=https://s3.amazonaws.com/ecs-refarch-continuous-deployment-v2-ap-southeast-2/ecs-refarch-continuous-deployment.yaml)
-**Asia Pacific (Tokyo)** (ap-northeast-1) | [![Launch Stack into Asia Pacific (Toyko) with CloudFormation](/images/deploy-to-aws.png)](https://console.aws.amazon.com/cloudformation/home?region=ap-northeast-1#/stacks/new?stackName=ECS-ContinuousDeployment&templateURL=https://s3.amazonaws.com/ecs-refarch-continuous-deployment-v2-ap-northeast-1/ecs-refarch-continuous-deployment.yaml)
-**Asia Pacific (Seoul)** (ap-northeast-2) | [![Launch Stack into Asia Pacific (Seoul) with CloudFormation](/images/deploy-to-aws.png)](https://console.aws.amazon.com/cloudformation/home?region=ap-northeast-2#/stacks/new?stackName=ECS-ContinuousDeployment&templateURL=https://s3.amazonaws.com/ecs-refarch-continuous-deployment-v2-ap-northeast-2/ecs-refarch-continuous-deployment.yaml)
-**Canada (Central)** (ca-central-1) | [![Launch Stack into Canada (Central) with CloudFormation](/images/deploy-to-aws.png)](https://console.aws.amazon.com/cloudformation/home?region=ca-central-1#/stacks/new?stackName=ECS-ContinuousDeployment&templateURL=https://s3.amazonaws.com/ecs-refarch-continuous-deployment-v2-ca-central-1/ecs-refarch-continuous-deployment.yaml)
+Deploy | Region Name | Region | Launch Types
+:---: | ------------ | ------------- | -------------
+[🚀][us-east-1] | US East (N. Virginia) | us-east-1 | Fargate, EC2
+[🚀][us-east-2] | US East (Ohio) | us-east-2 | EC2
+[🚀][us-west-1] | US West (N. California) | us-west-1 | EC2
+[🚀][us-west-2] | US West (Oregon) | us-west-2 | EC2
+[🚀][eu-west-1] | EU (Ireland) | eu-west-1 | EC2
+[🚀][eu-west-2] | EU (London) | eu-west-2 | EC2
+[🚀][eu-central-1] | EU (Frankfurt) | eu-central-1 | EC2
+[🚀][ap-southeast-1] | Asia Pacific (Singapore) | ap-southeast-1 | EC2
+[🚀][ap-southeast-2] | Asia Pacific (Sydney) | ap-southeast-2 | EC2
+[🚀][ap-northeast-1] | Asia Pacific (Tokyo) | ap-northeast-1 | EC2
+[🚀][ap-northeast-2] | Asia Pacific (Seoul) | ap-northeast-2 | EC2
+[🚀][ca-central-1] | Canada (Central) | ca-central-1 | EC2
 
 This reference architecture can only be deployed to Regions which have all
 necessary services. See the [Region
@@ -58,7 +63,13 @@ for more details.
 
 The CloudFormation template requires the following parameters:
 
-- GitHub configuration
+- Cluster Configuration
+  - **Launch Type**: Deploy your service using either AWS Fargate or Amazon EC2.
+    Selecting EC2 will create an Auto Scaling group of t2.micro instances for
+    your cluster. See the [documentation][launch-types] to learn more about
+    launch types.
+
+- GitHub Configuration
   - **Repo**: The repo name of the sample service.
   - **Branch**: The branch of the repo to deploy continuously.
   - **User**: Your username on GitHub.
@@ -115,8 +126,8 @@ CloudFormation template provided with this example.
 
 #### [Cluster](templates/ecs-cluster.yaml)
 
-  An ECS cluster backed by an Auto Scaling group of EC2 instances running the
-  Amazon ECS-optimized AMI.
+  An ECS cluster optionally backed by an Auto Scaling group of EC2 instances
+  running the Amazon ECS-optimized AMI for the EC2 launch type.
 
 #### [Load Balancer](templates/load-balancer.yaml)
 
@@ -134,3 +145,18 @@ This reference architecture sample is [licensed][license] under Apache 2.0.
 [continuous-deployment]: https://aws.amazon.com/devops/continuous-delivery/
 [architecture]: images/architecture.pdf
 [license]: LICENSE
+[fargate]: https://aws.amazon.com/fargate/
+[ec2]: https://aws.amazon.com/ec2/
+[launch-types]: https://docs.aws.amazon.com/AmazonECS/latest/developerguide/launch_types.html
+[us-east-1]: https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/create/review?stackName=ECS-ContinuousDeployment&templateURL=https://s3.amazonaws.com/ecs-refarch-continuous-deployment/ecs-refarch-continuous-deployment.yaml&param_LaunchType=Fargate
+[us-east-2]: https://console.aws.amazon.com/cloudformation/home?region=us-east-2#/stacks/create/review?stackName=ECS-ContinuousDeployment&templateURL=https://s3.amazonaws.com/ecs-refarch-continuous-deployment/ecs-refarch-continuous-deployment.yaml&param_LaunchType=EC2
+[us-west-1]: https://console.aws.amazon.com/cloudformation/home?region=us-west-1#/stacks/create/review?stackName=ECS-ContinuousDeployment&templateURL=https://s3.amazonaws.com/ecs-refarch-continuous-deployment/ecs-refarch-continuous-deployment.yaml&param_LaunchType=EC2
+[us-west-2]: https://console.aws.amazon.com/cloudformation/home?region=us-west-2#/stacks/create/review?stackName=ECS-ContinuousDeployment&templateURL=https://s3.amazonaws.com/ecs-refarch-continuous-deployment/ecs-refarch-continuous-deployment.yaml&param_LaunchType=EC2
+[eu-west-1]: https://console.aws.amazon.com/cloudformation/home?region=eu-west-1#/stacks/create/review?stackName=ECS-ContinuousDeployment&templateURL=https://s3.amazonaws.com/ecs-refarch-continuous-deployment/ecs-refarch-continuous-deployment.yaml&param_LaunchType=EC2
+[eu-west-2]: https://console.aws.amazon.com/cloudformation/home?region=eu-west-2#/stacks/create/review?stackName=ECS-ContinuousDeployment&templateURL=https://s3.amazonaws.com/ecs-refarch-continuous-deployment/ecs-refarch-continuous-deployment.yaml&param_LaunchType=EC2
+[eu-central-1]: https://console.aws.amazon.com/cloudformation/home?region=eu-central-1#/stacks/create/review?stackName=ECS-ContinuousDeployment&templateURL=https://s3.amazonaws.com/ecs-refarch-continuous-deployment/ecs-refarch-continuous-deployment.yaml&param_LaunchType=EC2
+[ap-southeast-1]: https://console.aws.amazon.com/cloudformation/home?region=ap-southeast-1#/stacks/create/review?stackName=ECS-ContinuousDeployment&templateURL=https://s3.amazonaws.com/ecs-refarch-continuous-deployment/ecs-refarch-continuous-deployment.yaml&param_LaunchType=EC2
+[ap-southeast-2]: https://console.aws.amazon.com/cloudformation/home?region=ap-southeast-2#/stacks/create/review?stackName=ECS-ContinuousDeployment&templateURL=https://s3.amazonaws.com/ecs-refarch-continuous-deployment/ecs-refarch-continuous-deployment.yaml&param_LaunchType=EC2
+[ap-northeast-1]: https://console.aws.amazon.com/cloudformation/home?region=ap-northeast-1#/stacks/create/review?stackName=ECS-ContinuousDeployment&templateURL=https://s3.amazonaws.com/ecs-refarch-continuous-deployment/ecs-refarch-continuous-deployment.yaml&param_LaunchType=EC2
+[ap-northeast-2]: https://console.aws.amazon.com/cloudformation/home?region=ap-northeast-2#/stacks/create/review?stackName=ECS-ContinuousDeployment&templateURL=https://s3.amazonaws.com/ecs-refarch-continuous-deployment/ecs-refarch-continuous-deployment.yaml&param_LaunchType=EC2
+[ca-central-1]: https://console.aws.amazon.com/cloudformation/home?region=ca-central-1#/stacks/create/review?stackName=ECS-ContinuousDeployment&templateURL=https://s3.amazonaws.com/ecs-refarch-continuous-deployment/ecs-refarch-continuous-deployment.yaml&param_LaunchType=EC2
