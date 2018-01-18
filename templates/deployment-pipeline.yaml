@@ -1,3 +1,6 @@
+---
+AWSTemplateFormatVersion: 2010-09-09
+
 Parameters:
   GitHubRepo:
     Type: String
@@ -7,6 +10,7 @@ Parameters:
 
   GitHubToken:
     Type: String
+    NoEcho: true
 
   GitHubUser:
     Type: String
@@ -27,14 +31,13 @@ Resources:
     Type: AWS::IAM::Role
     Properties:
       Path: /
-      AssumeRolePolicyDocument: |
-        {
-            "Statement": [{
-                "Effect": "Allow",
-                "Principal": { "Service": [ "codebuild.amazonaws.com" ]},
-                "Action": [ "sts:AssumeRole" ]
-            }]
-        }
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: codebuild.amazonaws.com
+            Action: sts:AssumeRole
       Policies:
         - PolicyName: root
           PolicyDocument:
@@ -68,14 +71,13 @@ Resources:
     Type: AWS::IAM::Role
     Properties:
       Path: /
-      AssumeRolePolicyDocument: |
-        {
-            "Statement": [{
-                "Effect": "Allow",
-                "Principal": { "Service": [ "codepipeline.amazonaws.com" ]},
-                "Action": [ "sts:AssumeRole" ]
-            }]
-        }
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: codepipeline.amazonaws.com
+            Action: sts:AssumeRole
       Policies:
         - PolicyName: root
           PolicyDocument:
@@ -110,17 +112,15 @@ Resources:
     Type: AWS::CodeBuild::Project
     Properties:
       Artifacts:
-        Location: !Ref ArtifactBucket
-        Type: "S3"
+        Type: CODEPIPELINE
       Source:
-        Location: !Sub ${ArtifactBucket}/source.zip
-        Type: "S3"
+        Type: CODEPIPELINE
         BuildSpec: |
           version: 0.2
           phases:
             pre_build:
               commands:
-                - $(aws ecr get-login)
+                - $(aws ecr get-login --no-include-email)
                 - TAG="$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | head -c 8)"
                 - IMAGE_URI="${REPOSITORY_URI}:${TAG}"
             build:
@@ -133,9 +133,9 @@ Resources:
           artifacts:
             files: images.json
       Environment:
-        ComputeType: "BUILD_GENERAL1_SMALL"
-        Image: "aws/codebuild/docker:1.12.1"
-        Type: "LINUX_CONTAINER"
+        ComputeType: BUILD_GENERAL1_SMALL
+        Image: aws/codebuild/docker:17.09.0
+        Type: LINUX_CONTAINER
         EnvironmentVariables:
           - Name: AWS_DEFAULT_REGION
             Value: !Ref AWS::Region
