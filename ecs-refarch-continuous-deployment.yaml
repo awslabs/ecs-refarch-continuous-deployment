@@ -21,6 +21,7 @@ Parameters:
 
   GitHubToken:
     Type: String
+    NoEcho: true
     Description: >
       Token for the user specified above. (https://github.com/settings/tokens)
 
