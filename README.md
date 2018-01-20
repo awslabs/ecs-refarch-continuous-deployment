@@ -39,8 +39,6 @@ directory, which contains the code for the Amazon ECS sample app.
 
 #### 2. Create the CloudFormation stack
 
-Choose **Deploy to AWS** to launch the template in your account.
-
 Deploy | Region Name | Region | Launch Types
 :---: | ------------ | ------------- | -------------
 [🚀][us-east-1] | US East (N. Virginia) | us-east-1 | Fargate, EC2
@@ -57,14 +55,14 @@ Deploy | Region Name | Region | Launch Types
 [🚀][ca-central-1] | Canada (Central) | ca-central-1 | EC2
 
 This reference architecture can only be deployed to Regions which have all
-necessary services. See the [Region
+necessary services available. See the [Region
 Table](https://aws.amazon.com/about-aws/global-infrastructure/regional-product-services/)
-for more details.
+for information about service availability.
 
 The CloudFormation template requires the following parameters:
 
 - Cluster Configuration
-  - **Launch Type**: Deploy your service using either AWS Fargate or Amazon EC2.
+  - **Launch Type**: Deploy the service using either AWS Fargate or Amazon EC2.
     Selecting EC2 will create an Auto Scaling group of t2.micro instances for
     your cluster. See the [documentation][launch-types] to learn more about
     launch types.
