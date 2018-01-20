@@ -1,38 +1,85 @@
+---
+AWSTemplateFormatVersion: 2010-09-09
+
+
 Parameters:
+  Cluster:
+    Type: String
+
   DesiredCount:
     Type: Number
-    Default: 2
+    Default: 1
+
+  LaunchType:
+    Type: String
+    Default: Fargate
+    AllowedValues:
+      - Fargate
+      - EC2
 
   TargetGroup:
     Type: String
 
-  Cluster:
-    Type: String
+  SourceSecurityGroup:
+    Type: AWS::EC2::SecurityGroup::Id
+
+  Subnets:
+    Type: List<AWS::EC2::Subnet::Id>
+
+
+Conditions:
+  Fargate: !Equals [ !Ref LaunchType, "Fargate" ]
+
+  EC2: !Equals [ !Ref LaunchType, "EC2" ]
 
 
 Resources:
-  ECSServiceRole:
+  TaskExecutionRole:
     Type: AWS::IAM::Role
     Properties:
       Path: /
-      AssumeRolePolicyDocument: |
-        {
-            "Statement": [{
-                "Effect": "Allow",
-                "Principal": { "Service": [ "ecs.amazonaws.com" ]},
-                "Action": [ "sts:AssumeRole" ]
-            }]
-        }
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Action: sts:AssumeRole
+            Effect: Allow
+            Principal:
+              Service: ecs-tasks.amazonaws.com
       ManagedPolicyArns:
-        - arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceRole
+        - arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy
 
-  Service:
+  LogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub /ecs/${AWS::StackName}
+
+  FargateService:
     Type: AWS::ECS::Service
+    Condition: Fargate
     Properties:
       Cluster: !Ref Cluster
-      Role: !Ref ECSServiceRole
       DesiredCount: !Ref DesiredCount
       TaskDefinition: !Ref TaskDefinition
+      LaunchType: FARGATE
+      NetworkConfiguration:
+        AwsvpcConfiguration:
+          AssignPublicIp: ENABLED
+          SecurityGroups:
+            - !Ref SourceSecurityGroup
+          Subnets: !Ref Subnets
+      LoadBalancers:
+        - ContainerName: simple-app
+          ContainerPort: 80
+          TargetGroupArn: !Ref TargetGroup
+
+  EC2Service:
+    Type: AWS::ECS::Service
+    Condition: EC2
+    Properties:
+      Cluster: !Ref Cluster
+      DesiredCount: !Ref DesiredCount
+      TaskDefinition: !Ref TaskDefinition
+      LaunchType: EC2
       LoadBalancers:
         - ContainerName: simple-app
           ContainerPort: 80
@@ -42,6 +89,12 @@ Resources:
     Type: AWS::ECS::TaskDefinition
     Properties:
       Family: !Sub ${AWS::StackName}-simple-app
+      RequiresCompatibilities:
+        - !If [ Fargate, "FARGATE", "EC2" ]
+      Memory: 512
+      Cpu: 256
+      NetworkMode: !If [ Fargate, "awsvpc", "bridge" ]
+      ExecutionRoleArn: !Ref TaskExecutionRole
       ContainerDefinitions:
         - Name: simple-app
           Image: amazon/amazon-ecs-sample
@@ -50,19 +103,25 @@ Resources:
             - -D
             - FOREGROUND
           Essential: true
-          Memory: 128
+          Memory: 256
           MountPoints:
             - SourceVolume: my-vol
               ContainerPath: /var/www/my-vol
           PortMappings:
             - ContainerPort: 80
+          LogConfiguration:
+            LogDriver: awslogs
+            Options:
+              awslogs-region: !Ref AWS::Region
+              awslogs-group: !Ref LogGroup
+              awslogs-stream-prefix: !Ref AWS::StackName
         - Name: busybox
           Image: busybox
           EntryPoint:
             - sh
             - -c
-          Essential: false
-          Memory: 128
+          Essential: true
+          Memory: 256
           VolumesFrom:
             - SourceContainer: simple-app
           Command:
@@ -72,5 +131,5 @@ Resources:
 
 
 Outputs:
-  ServiceName:
-    Value: !Ref Service
+  Service:
+    Value: !If [ Fargate, !Ref FargateService, !Ref EC2Service ]
