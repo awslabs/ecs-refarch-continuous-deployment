@@ -102,8 +102,9 @@ To remove all resources created by this example, do the following:
 
 1. Delete the main CloudFormation stack which deletes the substacks and resources.
 1. Manually delete resources which may contain content:
-  - S3 bucket: `ArtifactBucket`
-  - ECR repository: `Repository`
+
+    - S3 Bucket: ArtifactBucket
+    - ECR Repository: Repository
 
 ## CloudFormation template resources
 
