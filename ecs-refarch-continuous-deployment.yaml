@@ -118,9 +118,9 @@ Resources:
       TemplateURL: !Sub "https://s3.amazonaws.com/${TemplateBucket}/templates/vpc.yaml"
       Parameters:
         Name: !Ref AWS::StackName
-        VpcCIDR: 10.215.0.0/16
-        Subnet1CIDR: 10.215.10.0/24
-        Subnet2CIDR: 10.215.20.0/24
+        VpcCIDR: 10.25.0.0/16
+        Subnet1CIDR: 	10.25.4.0/24
+        Subnet2CIDR: 	10.25.5.0/24
 
   Service:
     Type: AWS::CloudFormation::Stack
