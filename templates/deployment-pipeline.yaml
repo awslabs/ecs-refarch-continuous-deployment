@@ -126,11 +126,12 @@ Resources:
                 - IMAGE_URI="${REPOSITORY_URI}:${TAG}"
             build:
               commands:
+                - cd docker
                 - docker build --tag "$IMAGE_URI" .
             post_build:
               commands:
                 - docker push "$IMAGE_URI"
-                - printf '[{"name":"simple-app","imageUri":"%s"}]' "$IMAGE_URI" > images.json
+                - printf '[{"name":"Podcoin-Connector-2","imageUri":"%s"}]' "$IMAGE_URI" > ../images.json
           artifacts:
             files: images.json
       Environment:
